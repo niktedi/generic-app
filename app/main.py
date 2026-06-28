@@ -19,10 +19,9 @@ The /healthz and /readyz split mirrors Kubernetes probe semantics:
   - readinessProbe hits /readyz   -> if it fails, pod is pulled from Service endpoints
 """
 
-from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Response
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
@@ -31,15 +30,7 @@ from app import db, health
 
 STATIC_DIR = Path(__file__).parent / "static"
 
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """Ensure the database schema exists before serving requests."""
-    db.init_db()
-    yield
-
-
-app = FastAPI(title="generic-app", version="0.1.0", lifespan=lifespan)
+app = FastAPI(title="generic-app", version="0.1.0")
 
 
 # --- request models -------------------------------------------------------
@@ -102,23 +93,22 @@ def healthz() -> dict:
 
 
 @app.get("/readyz")
-def readyz() -> dict:
+def readyz(response: Response) -> dict:
     """
-    Readiness: app is ready to serve traffic.
-    For now identical to liveness; later you'd check DB connections,
-    cache warm-up, etc. here before returning ok.
+    Readiness: ready only if the database is reachable.
+
+    Returns 503 when the DB is down so Kubernetes pulls the pod from the
+    Service endpoints (but does NOT restart it — that's liveness's job).
     """
-    return {"status": "ready"}
+    if db.db_ready():
+        return {"status": "ready"}
+    response.status_code = 503
+    return {"status": "not ready", "reason": "database unreachable"}
 
 
 @app.get("/info")
 def info() -> dict:
     return health.info_payload()
-
-
-@app.get("/add")
-def add(a: int, b: int) -> dict:
-    return {"a": a, "b": b, "result": health.add(a, b)}
 
 
 # Static assets (CSS/JS). Mounted last so it does not shadow API routes.

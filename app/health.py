@@ -7,9 +7,10 @@ covered by integration tests (test_api.py). This is the classic
 'thin controller, testable core' split.
 """
 
-import os
 import time
 from datetime import UTC, datetime
+
+from app.config import settings
 
 # Process start time, captured once at import.
 _START_TIME = time.monotonic()
@@ -39,9 +40,9 @@ def info_payload() -> dict:
     """
     return {
         "app": "generic-app",
-        "version": os.getenv("APP_VERSION", "dev"),
-        "pod": os.getenv("POD_NAME", "local"),
-        "node": os.getenv("NODE_NAME", "local"),
+        "version": settings.app_version,
+        "pod": settings.pod_name,
+        "node": settings.node_name,
     }
 
 

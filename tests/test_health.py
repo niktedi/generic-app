@@ -6,6 +6,7 @@ These are fast and isolated -- the base of the testing pyramid.
 import time
 
 from app import health
+from app.config import settings
 
 
 def test_add():
@@ -28,18 +29,18 @@ def test_uptime_increases():
 
 
 def test_info_payload_defaults(monkeypatch):
-    # Ensure env-driven fields fall back to 'local' when unset.
-    monkeypatch.delenv("POD_NAME", raising=False)
-    monkeypatch.delenv("NODE_NAME", raising=False)
+    # Settings fall back to 'local' for pod/node when nothing is configured.
+    monkeypatch.setattr(settings, "pod_name", "local")
+    monkeypatch.setattr(settings, "node_name", "local")
     payload = health.info_payload()
     assert payload["pod"] == "local"
     assert payload["node"] == "local"
     assert payload["app"] == "generic-app"
 
 
-def test_info_payload_reads_env(monkeypatch):
-    monkeypatch.setenv("POD_NAME", "generic-app-abc123")
-    monkeypatch.setenv("NODE_NAME", "work1")
+def test_info_payload_reads_settings(monkeypatch):
+    monkeypatch.setattr(settings, "pod_name", "generic-app-abc123")
+    monkeypatch.setattr(settings, "node_name", "work1")
     payload = health.info_payload()
     assert payload["pod"] == "generic-app-abc123"
     assert payload["node"] == "work1"

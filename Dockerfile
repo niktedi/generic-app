@@ -23,6 +23,10 @@ WORKDIR /app
 
 COPY --from=builder /install /usr/local
 COPY app/ ./app/
+# Alembic migrations ship in the image so the schema can be applied from a
+# container (a k8s Job in Phase 4) via `alembic upgrade head`.
+COPY alembic/ ./alembic/
+COPY alembic.ini ./alembic.ini
 
 # APP_VERSION is overridden at build time (CI passes the git sha/tag).
 ENV APP_VERSION=dev \

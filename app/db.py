@@ -10,23 +10,21 @@ it owns the schema and all SQL, exposing small repository functions that
 the route handlers call. That keeps the HTTP layer thin and testable.
 """
 
-import os
 from contextlib import contextmanager
 
 import pg8000.dbapi
-from dotenv import load_dotenv
 
-load_dotenv()
+from app.config import settings
 
 
 def _conn_kwargs() -> dict:
-    """Build pg8000 connection kwargs from environment variables."""
+    """Build pg8000 connection kwargs from the typed settings."""
     return {
-        "host": os.getenv("DB_HOST", "localhost"),
-        "port": int(os.getenv("DB_PORT", "5432")),
-        "database": os.getenv("DB_NAME", "calendar"),
-        "user": os.getenv("DB_USER", "postgres"),
-        "password": os.getenv("DB_PASSWORD", ""),
+        "host": settings.db_host,
+        "port": settings.db_port,
+        "database": settings.db_name,
+        "user": settings.db_user,
+        "password": settings.db_password,
     }
 
 
@@ -47,30 +45,16 @@ def get_conn():
         conn.close()
 
 
-def init_db() -> None:
-    """Create tables if they do not exist yet. Safe to run on every startup."""
-    with get_conn() as conn:
-        cur = conn.cursor()
-        cur.execute(
-            """
-            CREATE TABLE IF NOT EXISTS users (
-                id   SERIAL PRIMARY KEY,
-                name TEXT UNIQUE NOT NULL
-            )
-            """
-        )
-        cur.execute(
-            """
-            CREATE TABLE IF NOT EXISTS notes (
-                id         SERIAL PRIMARY KEY,
-                user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-                note_date  DATE NOT NULL,
-                content    TEXT NOT NULL,
-                created_at TIMESTAMPTZ NOT NULL DEFAULT now()
-            )
-            """
-        )
-        cur.execute("CREATE INDEX IF NOT EXISTS idx_notes_user_date ON notes(user_id, note_date)")
+def db_ready() -> bool:
+    """Return True if the database answers a trivial query."""
+    try:
+        with get_conn() as conn:
+            cur = conn.cursor()
+            cur.execute("SELECT 1")
+            cur.fetchone()
+        return True
+    except Exception:
+        return False
 
 
 def get_or_create_user(name: str) -> dict:
