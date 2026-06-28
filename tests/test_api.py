@@ -14,7 +14,8 @@ client = TestClient(app)
 def test_root():
     resp = client.get("/")
     assert resp.status_code == 200
-    assert "message" in resp.json()
+    # Root now serves the calendar single-page app.
+    assert "text/html" in resp.headers["content-type"]
 
 
 def test_healthz():

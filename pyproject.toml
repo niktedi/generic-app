@@ -6,6 +6,8 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "fastapi>=0.138.1",
+    "pg8000>=1.31.5",
+    "python-dotenv>=1.2.2",
     "uvicorn[standard]>=0.49.0",
 ]
 

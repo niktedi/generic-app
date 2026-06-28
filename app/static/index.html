@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calendar</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <!-- Name prompt: shown on first visit -->
+  <div id="name-overlay" class="overlay hidden">
+    <div class="modal name-modal">
+      <h2>Welcome</h2>
+      <p class="muted">Enter your name to open your calendar.</p>
+      <input id="name-input" type="text" placeholder="Your name" maxlength="100" autocomplete="off" />
+      <button id="name-submit" class="btn-primary">Continue</button>
+      <p id="name-error" class="error hidden"></p>
+    </div>
+  </div>
+
+  <!-- Day notes popup -->
+  <div id="day-overlay" class="overlay hidden">
+    <div class="modal day-modal">
+      <button id="day-close" class="modal-close" aria-label="Close">&times;</button>
+      <h2 id="day-title">Day</h2>
+      <div id="note-blocks" class="note-blocks"></div>
+      <div class="add-note">
+        <textarea id="note-input" placeholder="Write a note..." rows="3" maxlength="2000"></textarea>
+        <button id="note-add" class="btn-primary">Add</button>
+      </div>
+      <p id="note-error" class="error hidden"></p>
+    </div>
+  </div>
+
+  <main class="app hidden" id="app">
+    <header class="topbar">
+      <h1 id="greeting">hello</h1>
+    </header>
+
+    <section class="calendar-head">
+      <button id="prev-month" class="nav-btn" aria-label="Previous month">&#8249;</button>
+      <h2 id="month-label"></h2>
+      <button id="next-month" class="nav-btn" aria-label="Next month">&#8250;</button>
+    </section>
+
+    <div class="weekdays">
+      <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span>
+      <span>Fri</span><span>Sat</span><span>Sun</span>
+    </div>
+    <div id="grid" class="grid"></div>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
