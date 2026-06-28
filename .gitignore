@@ -1,0 +1,21 @@
+# Python-generated files
+__pycache__/
+*.py[cod]
+build/
+dist/
+wheels/
+*.egg-info/
+.coverage
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.claude/
+# Virtual environments
+.venv/
+.env
+.claude
+# Local Claude Code guidance (not shared)
+CLAUDE.md
+
+# Note: uv.lock, .python-version and the exported requirements.txt ARE committed.
