@@ -21,3 +21,13 @@ CLAUDE.md
 # Note: uv.lock, .python-version and the exported requirements.txt ARE committed.
 generic-app-*
 instructions/
+**/.terraform/
+
+.terraform/
+.terraform.lock.hcl
+
+
+*.tfstate
+*.tfstate.*
+*.tfvars
+crash.log
