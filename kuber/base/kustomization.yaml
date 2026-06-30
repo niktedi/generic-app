@@ -12,4 +12,4 @@ resources:
 # (or via `kustomize edit set image`) and ArgoCD picks it up from Git.
 images:
   - name: ghcr.io/niktedi/generic-app
-    newTag: b1ea693
+    newTag: fb8332b
