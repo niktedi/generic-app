@@ -1,0 +1,12 @@
+# Pins postgres to worker nodes. Requires the nodes to be labelled:
+#   kubectl label node work1 work2 node-role.kubernetes.io/worker=true
+# (node labels live in etcd, not Git — re-apply on cluster rebuild.)
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+spec:
+  template:
+    spec:
+      nodeSelector:
+        node-role.kubernetes.io/worker: "true"

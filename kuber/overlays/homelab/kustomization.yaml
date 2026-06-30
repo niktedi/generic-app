@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Everything in this overlay deploys into the generic-app namespace.
+namespace: generic-app
+
+resources:
+  - namespace.yaml
+  - storageclass.yaml
+  - sealedsecret.yaml
+  - ../../base
+
+# Environment-specific patches applied on top of base.
+patches:
+  - path: patch-postgres.yaml          # pin postgres to worker nodes
+  - path: patch-app-nodeport.yaml      # expose app via NodePort
+  - path: patch-migration-hook.yaml    # migration Job -> ArgoCD PreSync hook

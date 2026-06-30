@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Environment-agnostic resources. Overlays add namespace, storage,
+# secrets, and environment-specific service/exposure patches.
+resources:
+  - deployment.yaml
+  - statefulset.yaml
+  - migration-job.yaml
+
+# Single source of truth for the image tag. CI bumps the tag here
+# (or via `kustomize edit set image`) and ArgoCD picks it up from Git.
+images:
+  - name: ghcr.io/niktedi/generic-app
+    newTag: b1ea693

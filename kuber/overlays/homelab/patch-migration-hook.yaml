@@ -1,0 +1,14 @@
+# ArgoCD-specific: run the migration Job as a PreSync hook so it executes
+# before the Deployment/StatefulSet sync on every deploy. These annotations
+# live only in the homelab overlay — base stays ArgoCD-agnostic so the same
+# Job can run as a plain Job on AWS (or be triggered from CI).
+#
+# hook-delete-policy: remove the previous hook Job before running a new one,
+# so a fresh migrate Job is created each sync (Jobs are immutable once named).
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-migrate
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
