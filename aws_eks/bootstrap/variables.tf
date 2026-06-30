@@ -7,5 +7,5 @@ variable "region" {
 variable "project" {
   description = "Project name prefix for resources"
   type        = string
-  default     = "eks-learning"
+  default     = "generic-app-eks"
 }

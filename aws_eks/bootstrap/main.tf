@@ -60,14 +60,3 @@ resource "aws_s3_bucket_public_access_block" "tfstate" {
   restrict_public_buckets  = true
 }
 
-# --- DynamoDB for state locking ---
-resource "aws_dynamodb_table" "tflock" {
-  name         = local.table_name
-  billing_mode = "PAY_PER_REQUEST"   # no provisioned capacity — pay per request, pennies for locking
-  hash_key     = "LockID"            # Terraform expects exactly this key name
-
-  attribute {
-    name = "LockID"
-    type = "S"
-  }
-}
