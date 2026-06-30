@@ -22,11 +22,8 @@ CLAUDE.md
 generic-app-*
 instructions/
 **/.terraform/
-
 .terraform/
 .terraform.lock.hcl
-
-
 *.tfstate
 *.tfstate.*
 *.tfvars
