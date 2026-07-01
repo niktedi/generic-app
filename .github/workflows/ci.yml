@@ -139,3 +139,52 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+  
+  # ──────────────────────────────────────────────────────────────
+  # JOB 3: bump the image tag in both kustomizations and commit back.
+  # Runs only if build-push succeeded. The paths filter above means
+  # this bot commit (touching only kustomization.yaml) will NOT
+  # re-trigger the workflow — no loop.
+  # ──────────────────────────────────────────────────────────────
+  bump-tags:
+    runs-on: ubuntu-latest
+    needs: build-push
+
+    # contents: write is required to commit the tag bump back to the repo.
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install kustomize
+        run: |
+          curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
+          sudo mv kustomize /usr/local/bin/
+
+      - name: Bump image tags
+        run: |
+          SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+
+          cd kuber/base
+          kustomize edit set image ghcr.io/niktedi/generic-app=ghcr.io/niktedi/generic-app:$SHA
+          cd "$GITHUB_WORKSPACE"
+
+          cd aws_eks/kuber
+          kustomize edit set image 802421411869.dkr.ecr.eu-central-1.amazonaws.com/generic-app=802421411869.dkr.ecr.eu-central-1.amazonaws.com/generic-app:$SHA
+          cd "$GITHUB_WORKSPACE"
+
+      - name: Commit and push
+        run: |
+          SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add kuber/base/kustomization.yaml aws_eks/kuber/kustomization.yaml
+          if git diff --cached --quiet; then
+            echo "No tag change, skipping commit."
+          else
+            git commit -m "ci: bump image to $SHA"
+            git push
+          fi
+          
