@@ -4,6 +4,12 @@ name: CI
 on:
   push:
     branches: [main]
+    paths:
+      - 'app/**'
+      - 'alembic/**'
+      - 'Dockerfile'
+      - 'pyproject.toml'
+      - 'uv.lock'
 
 # GITHUB_TOKEN permissions: read for code, write to publish the image to ghcr.io.
 # Without packages: write the push to ghcr fails with 403.

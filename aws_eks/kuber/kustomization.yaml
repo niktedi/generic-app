@@ -15,4 +15,4 @@ resources:
 #   kustomize edit set image 802421411869.dkr.ecr.eu-central-1.amazonaws.com/generic-app=...:<sha>
 images:
   - name: 802421411869.dkr.ecr.eu-central-1.amazonaws.com/generic-app
-    newTag: fb8332b
+    newTag: 3b9fe79
