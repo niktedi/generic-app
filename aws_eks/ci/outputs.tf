@@ -1,5 +1,5 @@
 output "ecr_repository_url" {
-  value = aws_ecr_repository.generic-app.repository_url
+  value = aws_ecr_repository.generic_app.repository_url
 }
 
 output "iam_role_arn" {
