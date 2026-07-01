@@ -5,14 +5,15 @@ kind: Kustomization
 namespace: generic-app
 
 resources:
-  - namespace.yaml
-  - secret.yaml
-  - statefulset.yaml
-  - deployment.yaml
-  - migration-job.yaml
+- namespace.yaml
+- secret.yaml
+- statefulset.yaml
+- deployment.yaml
+- migration-job.yaml
 
 # Image tag in one place. CI can run:
 #   kustomize edit set image 802421411869.dkr.ecr.eu-central-1.amazonaws.com/generic-app=...:<sha>
 images:
-  - name: 802421411869.dkr.ecr.eu-central-1.amazonaws.com/generic-app
-    newTag: 3b9fe79
+- name: 802421411869.dkr.ecr.eu-central-1.amazonaws.com/generic-app
+  newName: 802421411869.dkr.ecr.eu-central-1.amazonaws.com/generic-app
+  newTag: cc0ec9d
