@@ -17,7 +17,7 @@ module "eks" {
   source = "./modules/eks"
 
   cluster_name        = "${var.project}-cluster"
-  kubernetes_version  = "1.31"
+  kubernetes_version  = "1.33"
   subnet_ids          = concat(module.vpc.public_subnet_ids, module.vpc.private_subnet_ids)
   private_subnet_ids  = module.vpc.private_subnet_ids   # ← added
   public_access_cidrs = var.public_access_cidrs

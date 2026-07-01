@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Independent EKS manifest set. Apply with:  kubectl apply -k aws_eks/kuber
+namespace: generic-app
+
+resources:
+  - namespace.yaml
+  - secret.yaml
+  - statefulset.yaml
+  - deployment.yaml
+  - migration-job.yaml
+
+# Image tag in one place. CI can run:
+#   kustomize edit set image 802421411869.dkr.ecr.eu-central-1.amazonaws.com/generic-app=...:<sha>
+images:
+  - name: 802421411869.dkr.ecr.eu-central-1.amazonaws.com/generic-app
+    newTag: fb8332b

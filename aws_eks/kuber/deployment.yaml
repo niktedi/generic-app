@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: generic-app
+  namespace: generic-app
+  labels:
+    app: generic-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: generic-app
+  template:
+    metadata:
+      labels:
+        app: generic-app
+    spec:
+      securityContext:
+        runAsUser: 10001
+        runAsGroup: 10001
+        runAsNonRoot: true
+      containers:
+        - name: generic-app
+          # ECR image. Tag is set by kustomize (images:) or replaced by CI.
+          image: 802421411869.dkr.ecr.eu-central-1.amazonaws.com/generic-app
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8000
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          envFrom:
+            - secretRef:
+                name: postgres-secret
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: generic-app
+  namespace: generic-app
+  labels:
+    app: generic-app
+  annotations:
+    # Network Load Balancer, internet-facing. The in-tree AWS cloud provider
+    # provisions this automatically (no AWS LB Controller required for NLB/CLB).
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+spec:
+  type: LoadBalancer
+  selector:
+    app: generic-app
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8000
