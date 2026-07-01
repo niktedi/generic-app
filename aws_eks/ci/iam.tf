@@ -38,7 +38,7 @@ data "aws_iam_policy_document" "ecr_push" {
   }
 
   statement {
-    sid    = "PushToGitActRepo"
+    sid    = "PushToGenericAppRepo"
     effect = "Allow"
     actions = [
       "ecr:BatchCheckLayerAvailability",
@@ -49,12 +49,12 @@ data "aws_iam_policy_document" "ecr_push" {
       "ecr:BatchGetImage",
       "ecr:GetDownloadUrlForLayer",
     ]
-    resources = [aws_ecr_repository.git_act.arn]
+    resources = [aws_ecr_repository.generic-app]
   }
 }
 
 resource "aws_iam_role_policy" "ecr_push" {
-  name   = "ecr-push-git-act"
+  name   = "ecr-push-generic-app"
   role   = aws_iam_role.github_actions_ecr_push.id
   policy = data.aws_iam_policy_document.ecr_push.json
 }
