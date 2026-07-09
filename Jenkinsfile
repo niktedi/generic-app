@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME     = "genApp"
+        IMAGE_NAME     = "genapp"
         CONTAINER_NAME = "generic-app"
         HOST_PORT      = "8000"
         CONTAINER_PORT = "8000"
