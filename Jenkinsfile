@@ -1,22 +1,46 @@
 pipeline {
     agent any
 
+    environment {
+        IMAGE_NAME     = "genApp"
+        CONTAINER_NAME = "generic-app"
+        HOST_PORT      = "8000"
+        CONTAINER_PORT = "8000"
+    }
+
     stages {
-        stage('Hello') {
+        stage('Checkout') {
             steps {
-                echo 'Пайплайн работает'
-                sh 'uname -a'
+                checkout scm
             }
         }
-        stage('Build') {
+
+        stage('Build image') {
             steps {
-                sh 'echo собираем...'
+                sh "docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} -t ${IMAGE_NAME}:latest ."
             }
         }
-        stage('Test') {
+
+        stage('Restart container') {
             steps {
-                sh 'echo тестируем...'
+                sh """
+                    docker rm -f ${CONTAINER_NAME} 2>/dev/null || true
+                    docker run -d \
+                        --name ${CONTAINER_NAME} \
+                        --restart unless-stopped \
+                        -p ${HOST_PORT}:${CONTAINER_PORT} \
+                        ${IMAGE_NAME}:latest
+                """
             }
+        }
+    }
+
+    post {
+        always {
+            sh "docker image prune -f"
+        }
+        success {
+            sh "docker ps --filter name=${CONTAINER_NAME}"
         }
     }
 }
